@@ -1,0 +1,1179 @@
+\documentclass[fleqn]{article}
+\usepackage[a4paper, total={6in, 8in}, margin=1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage[pdf]{graphviz}
+\usepackage{xpatch}
+\usepackage{morewrites}
+\usepackage{amsmath}
+\title{Теоретические модели вычислений}
+\author{Николай Малахов}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\begin{large}
+Задание №1. Построить конечный автомат,
+распознающий язык (5 баллов)
+\end{large}
+
+\begin{equation}
+    L = \{w \in \{ a,b,c \}^* \; | \; |w|_c = 1 \}
+\end{equation}
+
+
+\makeatletter
+\newcommand*{\addFileDependency}[1]{% argument=file name and extension
+  \typeout{(#1)}
+  \@addtofilelist{#1}
+  \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+\xpretocmd{\digraph}{\addFileDependency{#2.dot}}{}{}
+
+\digraph[scale = 0.7] {Task11} {
+    rankdir = LR;
+    node [shape = circle] Q1;
+    node [shape = doublecircle] Q2;
+    Q1 -> Q2 [label = "c"];
+    Q1 -> Q1 [label = "a,b"];
+    Q2 -> Q2 [label = "a,b"];
+}
+
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \leq 2 \; | \; |w|_b \geq 2 \}
+\end{equation}
+
+\digraph[scale = 0.7] {Task12} {
+    rankdir = LR;
+    node [shape = circle] Q00, Q01, Q10, Q11, Q20, Q21;
+    node [shape = doublecircle] Q02, Q12, Q22;
+    Q00 -> Q10 [label = "a"];
+    Q00 -> Q01 [label = "b"];
+    Q10 -> Q20 [label = "a"];
+    Q10 -> Q11 [label = "b"];
+    Q01 -> Q11 [label = "a"];
+    Q01 -> Q02 [label = "b"];
+    Q11 -> Q21 [label = "a"];
+    Q11 -> Q12 [label = "b"];
+    Q02 -> Q12 [label = "a"];
+    Q02 -> Q02 [label = "b"];
+    Q12 -> Q22 [label = "a"];
+    Q12 -> Q12 [label = "b"];
+    Q20 -> Q21 [label = "b"];
+    Q21 -> Q22 [label = "b"];
+    Q22 -> Q22 [label = "b"];
+}
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \neq  \; |w|_b \}
+\end{equation}
+
+Язык нерегулярный, автомат построить нельзя
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; ww = \; www \}
+\end{equation}
+
+Язык пустой
+
+\digraph[scale=0.7] {Task14} {
+    rankdir=LR;
+    node [shape= none] start [label = < >];
+    node [shape=doublecircle] Q1;
+    start -> Q1 [label = "start"];
+}
+
+\begin{large}
+Задание №2. Построить конечный автомат, используя прямое произведение (5 баллов) 
+\end{large}
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \geq 2 \; \wedge \; |w|_b \geq 2 \}
+\end{equation}
+
+Определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \geq 2 \}
+\end{equation}
+
+\digraph[scale =0.7] {Task211} {
+    rankdir = LR;
+    node[shape = circle] Q0, Q1;
+    node[shape = doublecircle] Q2;
+    Q0 -> Q1 [label = "a"];
+    Q0 -> Q0 [label = "b"];
+    Q1 -> Q2 [label = "a"];
+    Q1 -> Q1 [label = "b"];
+    Q2 -> Q2 [label = "a,b"];
+}
+
+Также определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_b \geq 2 \}
+\end{equation}
+
+\digraph[scale =0.7] {Task212} {
+    rankdir = LR;
+    node[shape = circle] S0, S1;
+    node[shape = doublecircle] S2;
+    S0 -> S1 [label = "b"];
+    S0 -> S0 [label = "a"];
+    S1 -> S2 [label = "b"];
+    S1 -> S1 [label = "a"];
+    S2 -> S2 [label = "a,b"];
+    
+}
+
+Произведение автоматов:
+\begin {equation*}
+\begin {aligned}
+\Sigma = \Sigma_1 \bigcup \Sigma_2 = \{a,b\} \nonumber \\
+Q = {\langle q0,s0 \rangle, \langle q0,s1 \rangle, \langle q0,s2 \rangle, \\ \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle, \\ \langle q2,s0 \rangle, \langle q2,s1 \rangle, \langle q2,s2 \rangle } \nonumber \\
+s = \langle q0,s0 \rangle \nonumber \\
+T = \langle q2,s2\rangle \nonumber \\
+\delta: \\
+\delta (\langle q0,s0 \rangle, b) = \langle q0,s1 \rangle \\
+\delta (\langle q0,s1 \rangle, b) = \langle q0,s2 \rangle \\
+\delta (\langle q0,s2 \rangle, b) = \langle q0,s2 \rangle \\
+\delta (\langle q1,s0 \rangle, b) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, b) = \langle q1,s2 \rangle \\
+\delta (\langle q1,s2 \rangle, b) = \langle q1,s2 \rangle \\
+\delta (\langle q2,s0 \rangle, b) = \langle q2,s1 \rangle \\
+\delta (\langle q2,s1 \rangle, b) = \langle q2,s2 \rangle \\
+\delta (\langle q2,s2 \rangle, b) = \langle q2,s2 \rangle \\
+\delta (\langle q0,s0 \rangle, a) = \langle q1,s0 \rangle \\
+\delta (\langle q1,s0 \rangle, a) = \langle q2,s0 \rangle \\
+\delta (\langle q2,s0 \rangle, a) = \langle q2,s0 \rangle \\
+\delta (\langle q0,s1 \rangle, a) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, a) = \langle q2,s1 \rangle \\
+\delta (\langle q2,s1 \rangle, a) = \langle q2,s1 \rangle \\
+\delta (\langle q0,s2 \rangle, a) = \langle q1,s2 \rangle \\
+\delta (\langle q1,s2 \rangle, a) = \langle q2,s2 \rangle \\
+\delta (\langle q2,s2 \rangle, a) = \langle q2,s2 \rangle \\
+\end {aligned}
+\end {equation*}
+
+\digraph[scale=0.7] {Task213} {
+    node [shape = circle] q0s0, q0s1, q0s2, q1s0, q1s1, q1s2, q2s0, q2s1;
+    node [shape = doublecircle] q2s2;
+    q0s0->q0s1 [label="b"];
+    q0s1->q0s2 [label="b"];
+    q0s2->q0s2 [label="b"];
+    q1s0->q1s1 [label="b"];
+    q1s1->q1s2 [label="b"];
+    q1s2->q1s2 [label="b"];
+    q2s0->q2s1 [label="b"];
+    q2s1->q2s2 [label="b"];
+    q2s2->q2s2 [label="b"];
+    
+    q0s0->q1s0 [label="a"];
+    q1s0->q2s0 [label="a"];
+    q2s0->q2s0 [label="a"];
+    q0s1->q1s1 [label="a"];
+    q1s1->q2s1 [label="a"];
+    q2s1->q2s1 [label="a"];
+    q0s2->q1s2 [label="a"];
+    q1s2->q2s2 [label="a"];
+    q2s2->q2s2 [label="a"];
+}
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w| \geq 3 \; \wedge \; |w| \mbox{ нечётное} \}
+\end{equation}
+
+Определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w| \geq 3 \; \}
+\end{equation}
+
+\digraph[scale = 0.7] {Task221}{
+    rankdir=LR;
+    node [shape =circle] q0, q1, q2;
+    node [shape =doublecircle] q3;
+    q0->q1 [label="a,b"];
+    q1->q2 [label="a,b"];
+    q2->q3 [label="a,b"];
+    q3->q3 [label="a,b"];
+}
+
+Тепреь определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; |w| \mbox{ нечётное} \}
+\end{equation}
+
+\digraph[scale = 0.7] {Task222}{
+    rankdir=LR;
+    node [shape =circle] s0, s2;
+    node [shape =doublecircle] s1, s3;
+    s0->s1 [label="a,b"];
+    s1->s2 [label="a,b"];
+    s2->s3 [label="a,b"];
+    s3->s2 [label="a,b"];
+}
+
+Произведение автоматов:
+\begin {equation*}
+\begin {aligned}
+\Sigma = \Sigma_1 \bigcup \Sigma_2 = \{a,b\} \nonumber \\
+Q = {\langle q0,s0 \rangle, \langle q0,s1 \rangle, \langle q0,s2 \rangle, \langle q0,s3 \rangle, \\ \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle, \langle q1,s3 \rangle, \\ \langle q2,s0 \rangle, \langle q3,s1 \rangle, \langle q2,s2 \rangle, \langle q2,s3 \rangle, \\ \langle q3,s0 \rangle, \langle q2,s1 \rangle, \langle q3,s2 \rangle, \langle q3,s3 \rangle} \nonumber \\
+s = \langle q0,s0 \rangle \nonumber \\
+T = \langle q3,s1\rangle, \langle q3,s3\rangle \nonumber \\
+\delta: \\
+\delta (\langle q0,s0 \rangle, a,b) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, a,b) = \langle q2,s2 \rangle \\
+\delta (\langle q2,s2 \rangle, a,b) = \langle q3,s3 \rangle \\
+\delta (\langle q3,s3 \rangle, a,b) = \langle q3,s2 \rangle \\
+\delta (\langle q3,s2 \rangle, a,b) = \langle q3,s3 \rangle \\
+\end {aligned}
+\end {equation*}
+
+\digraph[scale = 0.7] {Task223}{
+    rankdir=LR;
+    node [shape =circle] q0s0, q1s1, q2s2, q3s2;
+    node [shape =doublecircle] q3s3;
+    q0s0->q1s1 [label="a,b"];
+    q1s1->q2s2 [label="a,b"];
+    q2s2->q3s3 [label="a,b"];
+    q3s3->q3s2 [label="a,b"];
+    q3s2->q3s3 [label="a,b"];
+}
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \mbox { чётно} \; \wedge \; |w|_b \mbox{ кратно трём} \}
+\end{equation}
+
+Определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; | \; |w|_a \mbox { чётно}\}
+\end{equation}
+
+\digraph[scale = 0.7] {Task231}{
+    rankdir=LR;
+    node [shape =doublecircle] q0;
+    node [shape =circle] q1;
+    q0->q0 [label="b"];
+    q0->q1 [label="a"];
+    q1->q0 [label="a"];
+    q1->q1 [label="b"];
+}
+
+Теперь определим автомат для
+
+\begin{equation}
+    L = \{w \in \{ a,b \}^* \; |w|_b \mbox{ кратно трём} \}
+\end{equation}
+
+\digraph[scale = 0.7] {Task232}{
+    rankdir=LR;
+    node [shape =doublecircle] s0;
+    node [shape =circle] s1, s2;
+    s0->s1 [label="b"];
+    s0->s0 [label="a"];
+    s1->s2 [label="b"];
+    s1->s1 [label="a"];
+    s2->s0 [label="b"];
+    s2->s2 [label="a"];
+}
+
+Произведение автоматов:
+
+\begin {equation*}
+\begin {aligned}
+\Sigma = \Sigma_1 \bigcup \Sigma_2 = \{a,b\} \nonumber \\
+Q = {\langle q0,s0 \rangle, \langle q0,s1 \rangle, \langle q0,s2 \rangle, \\ \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle } \nonumber \\
+s = \langle q0,s0 \rangle \nonumber \\
+T = \langle q0,s0 \rangle \nonumber \\
+\delta: \\
+\delta (\langle q0,s0 \rangle, a) = \langle q1,s0 \rangle \\
+\delta (\langle q1,s0 \rangle, a) = \langle q0,s0 \rangle \\
+\delta (\langle q0,s1 \rangle, a) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, a) = \langle q0,s1 \rangle \\
+\delta (\langle q0,s2 \rangle, a) = \langle q1,s2 \rangle \\
+\delta (\langle q1,s2 \rangle, a) = \langle q0,s2 \rangle \\
+\delta (\langle q0,s0 \rangle, b) = \langle q0,s1 \rangle \\
+\delta (\langle q1,s0 \rangle, b) = \langle q1,s1 \rangle \\
+\delta (\langle q0,s1 \rangle, b) = \langle q0,s2 \rangle \\
+\delta (\langle q1,s1 \rangle, b) = \langle q1,s2 \rangle \\
+\delta (\langle q0,s2 \rangle, b) = \langle q0,s0 \rangle \\
+\delta (\langle q1,s2 \rangle, b) = \langle q1,s0 \rangle \\
+\end {aligned}
+\end {equation*}
+
+\digraph[scale=0.7] {Task233}{
+    rankdir=LR;
+    node [shape =doublecircle] q0s0;
+    node [shape =circle] q0s1, q0s2, q1s0, q1s1, q1s2;
+    q0s0->q1s0 [label="a"];
+    q1s0->q0s0 [label="a"];
+    q0s1->q1s1 [label="a"];
+    q1s1->q0s1 [label="a"];
+    q0s2->q1s2 [label="a"];
+    q1s2->q0s2 [label="a"];
+    
+    q0s0->q0s1 [label="b"];
+    q1s0->q1s1 [label="b"];
+    q0s1->q0s2 [label="b"];
+    q1s1->q1s2 [label="b"];
+    q0s2->q0s0 [label="b"];
+    q1s2->q1s0 [label="b"];
+}
+
+\begin{equation}
+    L_4 = \overline{L_3};
+\end{equation}
+
+Определим обратные автоматы:
+
+\digraph[scale = 0.7] {Task241}{
+    rankdir=LR;
+    node [shape =circle] q0;
+    node [shape =doublecircle] q1;
+    q0->q0 [label="b"];
+    q0->q1 [label="a"];
+    q1->q0 [label="a"];
+    q1->q1 [label="b"];
+}
+
+\digraph[scale = 0.7] {Task242}{
+    rankdir=LR;
+    node [shape =circle ] s0;
+    node [shape =doublecircle] s1, s2;
+    s0->s1 [label="b"];
+    s0->s0 [label="a"];
+    s1->s2 [label="b"];
+    s1->s1 [label="a"];
+    s2->s0 [label="b"];
+    s2->s2 [label="a"];
+}
+
+Произведение автоматов:
+
+\begin {equation*}
+\begin {aligned}
+\Sigma = \Sigma_1 \bigcup \Sigma_2 = \{a,b\} \nonumber \\
+Q = {\langle q0,s0 \rangle, \langle q0,s1 \rangle, \langle q0,s2 \rangle, \\ \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle } \nonumber \\
+s = \langle q0,s0 \rangle \nonumber \\
+T = \langle q0,s1 \rangle, \langle q0,s2 \rangle, \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle \nonumber \\
+\delta: \\
+\delta (\langle q0,s0 \rangle, a) = \langle q1,s0 \rangle \\
+\delta (\langle q1,s0 \rangle, a) = \langle q0,s0 \rangle \\
+\delta (\langle q0,s1 \rangle, a) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, a) = \langle q0,s1 \rangle \\
+\delta (\langle q0,s2 \rangle, a) = \langle q1,s2 \rangle \\
+\delta (\langle q1,s2 \rangle, a) = \langle q0,s2 \rangle \\
+\delta (\langle q0,s0 \rangle, b) = \langle q0,s1 \rangle \\
+\delta (\langle q1,s0 \rangle, b) = \langle q1,s1 \rangle \\
+\delta (\langle q0,s1 \rangle, b) = \langle q0,s2 \rangle \\
+\delta (\langle q1,s1 \rangle, b) = \langle q1,s2 \rangle \\
+\delta (\langle q0,s2 \rangle, b) = \langle q0,s0 \rangle \\
+\delta (\langle q1,s2 \rangle, b) = \langle q1,s0 \rangle \\
+\end {aligned}
+\end {equation*}
+
+\digraph[scale=0.7] {Task243}{
+    rankdir=LR;
+    node [shape =circle ] q0s0;
+    node [shape =doublecircle] q0s1, q0s2, q1s0, q1s1, q1s2;
+    q0s0->q1s0 [label="a"];
+    q1s0->q0s0 [label="a"];
+    q0s1->q1s1 [label="a"];
+    q1s1->q0s1 [label="a"];
+    q0s2->q1s2 [label="a"];
+    q1s2->q0s2 [label="a"];
+    
+    q0s0->q0s1 [label="b"];
+    q1s0->q1s1 [label="b"];
+    q0s1->q0s2 [label="b"];
+    q1s1->q1s2 [label="b"];
+    q0s2->q0s0 [label="b"];
+    q1s2->q1s0 [label="b"];
+}
+
+\begin{equation}
+    L_5= L2 \backslash L3 = L2 \bigcup \overline{L_3} = L2 \bigcup L4;
+\end{equation}
+
+Но так как я невнимательный, построим еще и зачем-то 
+\begin{equation}
+    L_5= L1 \bigcup L4;
+\end{equation}
+
+\digraph[scale=0.7] {Task251} {
+    node [shape = circle] q0, q1, q2, q3, q4, q5, q6, q7;
+    node [shape = doublecircle] q8;
+    q0->q1 [label="b"];
+    q1->q2 [label="b"];
+    q2->q2 [label="b"];
+    q3->q4 [label="b"];
+    q4->q5 [label="b"];
+    q5->q5 [label="b"];
+    q6->q7 [label="b"];
+    q7->q8 [label="b"];
+    q8->q8 [label="b"];
+    q0->q3 [label="a"];
+    q3->q6 [label="a"];
+    q6->q6 [label="a"];
+    q1->q4 [label="a"];
+    q4->q7 [label="a"];
+    q7->q7 [label="a"];
+    q2->q5 [label="a"];
+    q5->q8 [label="a"];
+    q8->q8 [label="a"];
+}
+
+\digraph[scale=0.7] {Task252}{
+    rankdir=LR;
+    node [shape =circle ] s0;
+    node [shape =doublecircle] s1, s2, s3, s4, s5;
+    s0->s3 [label="a"];
+    s3->s0 [label="a"];
+    s1->s4 [label="a"];
+    s4->s1 [label="a"];
+    s2->s5 [label="a"];
+    s5->s2 [label="a"];
+    
+    s0->s1 [label="b"];
+    s3->s4 [label="b"];
+    s1->s2 [label="b"];
+    s4->s5 [label="b"];
+    s2->s0 [label="b"];
+    s5->s3 [label="b"];
+}
+Произведение автоматов я расписывать не буду, так как и так лишнюю работу сделал
+Но итоговый автомат выглядит так:
+
+\digraph[scale=0.4] {Task253}{
+    rankdir=LR;
+    node [shape =circle ] q0s0, q1s1, q3s3, q4s4, q2s2, q6s0, q7s1, q5s5, q2s3, q6s3, q5s3, q5s0, q2s4, q7s4, q8s0, q5s4, q5s1, q2s5, q5s5, q5s2;
+    node [shape =doublecircle] q8s2, q8s5, q8s3, q8s1, q8s4;
+    q0s0->q3s3 [label="a"];
+    q0s0->q1s1 [label="b"];
+    
+    q1s1->q4s4 [label="a"];
+    q1s1->q2s2 [label="b"];
+    
+    q3s3->q6s0 [label="a"];
+    q3s3->q4s4 [label="b"];
+    
+    q4s4->q7s1 [label="a"];
+    q4s4->q5s5 [label="b"];
+    
+    q2s2->q5s5 [label="a"];
+    q2s2->q2s3 [label="b"];
+    
+    q6s0->q6s3 [label="a"];
+    q6s0->q7s1 [label="b"];
+    
+    q5s5->q8s2 [label="a"];
+    q5s5->q5s3 [label="b"];
+    
+    q2s3->q5s0 [label="a"];
+    q2s3->q2s4 [label="b"];
+    
+    q6s3->q6s0 [label="a"];
+    q6s3->q7s4 [label="b"];
+    
+    q7s1->q7s4 [label="a"];
+    q7s1->q8s2 [label="b"];
+    
+    q8s2->q8s5 [label="a"];
+    q8s2->q8s0 [label="b"];
+    
+    q5s3->q8s0 [label="a"];
+    q5s3->q5s4 [label="b"];
+    
+    q5s0->q8s3 [label="a"];
+    q5s0->q5s1 [label="b"];
+    
+    q2s4->q5s1 [label="a"];
+    q2s4->q2s5 [label="b"];
+    
+    q7s4->q7s1 [label="a"];
+    q7s4->q8s5 [label="b"];
+    
+    q8s5->q8s2 [label="a"];
+    q8s5->q8s3 [label="b"];
+    
+    q8s0->q8s3 [label="a"];
+    q8s0->q8s1 [label="b"];
+    
+    q5s4->q8s1 [label="a"];
+    q5s4->q5s5 [label="b"];
+    
+    q8s3->q8s0 [label="a"];
+    q8s3->q8s4 [label="b"];
+    
+    q5s1->q8s4 [label="a"];
+    q5s1->q5s2 [label="b"];
+    
+    q2s5->q5s2 [label="a"];
+    q2s5->q2s3 [label="b"];
+    
+    q8s1->q8s4 [label="a"];
+    q8s1->q8s2 [label="b"];
+    
+    q5s5->q8s2 [label="a"];
+    q5s5->q5s3 [label="b"];
+    
+    q8s4->q8s1 [label="a"];
+    q8s4->q8s5 [label="b"];
+    
+    q5s2->q8s5 [label="a"];
+    q5s2->q8s0 [label="b"];
+}
+
+Какой же я все-таки молодец
+
+А теперь действительно сделаем задачу:
+
+\digraph[scale=0.7] {Task254} {
+    rankdir=LR;
+    node [shape =circle] q0, q1, q2, q3;
+    node [shape =doublecircle] q4;
+    q0->q1 [label="a,b"];
+    q1->q2 [label="a,b"];
+    q2->q4 [label="a,b"];
+    q4->q3 [label="a,b"];
+    q3->q4 [label="a,b"];
+}
+
+\digraph[scale=0.7] {Task255}{
+    rankdir=LR;
+    node [shape =circle ] s0;
+    node [shape =doublecircle] s1, s2, s3, s4, s5;
+    s0->s3 [label="a"];
+    s3->s0 [label="a"];
+    s1->s4 [label="a"];
+    s4->s1 [label="a"];
+    s2->s5 [label="a"];
+    s5->s2 [label="a"];
+    
+    s0->s1 [label="b"];
+    s3->s4 [label="b"];
+    s1->s2 [label="b"];
+    s4->s5 [label="b"];
+    s2->s0 [label="b"];
+    s5->s3 [label="b"];
+}
+
+Произведение:
+\begin {equation*}
+\begin {aligned}
+\Sigma = \Sigma_1 \bigcup \Sigma_2 = \{a,b\} \nonumber \\
+Q = {\langle q0,s0 \rangle, \langle q0,s1 \rangle, \langle q0,s2 \rangle, \langle q0,s3 \rangle,\langle q0,s4 \rangle,\langle q0,s5 \rangle\\ \langle q1,s0 \rangle, \langle q1,s1 \rangle, \langle q1,s2 \rangle, \langle q1,s3 \rangle,\langle q1,s4 \rangle,\langle q1,s5 \rangle\\ \langle q2,s0 \rangle, \langle q2,s1 \rangle, \langle q2,s2 \rangle, \langle q2,s3 \rangle,\langle q2,s4 \rangle,\langle q2,s5 \rangle \\ \langle q3,s0 \rangle, \langle q3,s1 \rangle, \langle q3,s2 \rangle, \langle q3,s3 \rangle,\langle q3,s4 \rangle,\langle q3,s5 \rangle \\\langle q4,s0 \rangle, \langle q4,s1 \rangle, \langle q4,s2 \rangle, \langle q4,s3 \rangle,\langle q4,s4 \rangle,\langle q4,s5 \rangle} \nonumber \\
+s = \langle q0,s0 \rangle \nonumber \\
+T = \langle q4,s1 \rangle, \langle q4,s2 \rangle, \langle q4,s3 \rangle, \langle q4,s4 \rangle, \langle q4,s5 \rangle \nonumber \\
+\delta: \\
+\delta (\langle q0,s0 \rangle, a) = \langle q1,s3 \rangle \\
+\delta (\langle q0,s0 \rangle, b) = \langle q1,s1 \rangle \\
+\delta (\langle q1,s1 \rangle, a) = \langle q2,s4 \rangle \\
+\delta (\langle q1,s1 \rangle, b) = \langle q2,s2 \rangle \\
+\delta (\langle q1,s3 \rangle, a) = \langle q2,s0 \rangle \\
+\delta (\langle q1,s3 \rangle, b) = \langle q2,s4 \rangle \\
+\delta (\langle q2,s4 \rangle, a) = \langle q4,s1 \rangle \\
+\delta (\langle q2,s4 \rangle, b) = \langle q4,s5 \rangle \\
+\delta (\langle q2,s2 \rangle, a) = \langle q4,s5 \rangle \\
+\delta (\langle q2,s2 \rangle, b) = \langle q4,s0 \rangle \\
+\delta (\langle q2,s0 \rangle, a) = \langle q4,s3 \rangle \\
+\delta (\langle q2,s0 \rangle, b) = \langle q4,s1 \rangle \\
+\delta (\langle q4,s1 \rangle, a) = \langle q3,s4 \rangle \\
+\delta (\langle q4,s1 \rangle, b) = \langle q3,s2 \rangle \\
+\delta (\langle q4,s5 \rangle, a) = \langle q3,s2 \rangle \\
+\delta (\langle q4,s5 \rangle, b) = \langle q3,s3 \rangle \\
+\delta (\langle q4,s0 \rangle, a) = \langle q3,s3 \rangle \\
+\delta (\langle q4,s0 \rangle, b) = \langle q3,s1 \rangle \\
+\delta (\langle q4,s3 \rangle, a) = \langle q3,s0 \rangle \\
+\delta (\langle q4,s3 \rangle, b) = \langle q3,s4 \rangle \\
+\delta (\langle q3,s4 \rangle, a) = \langle q4,s1 \rangle \\
+\delta (\langle q3,s4 \rangle, b) = \langle q4,s5 \rangle \\
+\delta (\langle q3,s2 \rangle, a) = \langle q4,s5 \rangle \\
+\delta (\langle q3,s2 \rangle, b) = \langle q4,s0 \rangle \\
+\delta (\langle q3,s3 \rangle, a) = \langle q4,s0 \rangle \\
+\delta (\langle q3,s3 \rangle, b) = \langle q4,s4 \rangle \\
+\delta (\langle q3,s1 \rangle, a) = \langle q4,s4 \rangle \\
+\delta (\langle q3,s1 \rangle, b) = \langle q4,s2 \rangle \\
+\delta (\langle q3,s0 \rangle, a) = \langle q4,s3 \rangle \\
+\delta (\langle q3,s0 \rangle, b) = \langle q4,s1 \rangle \\
+\delta (\langle q4,s4 \rangle, a) = \langle q3,s1 \rangle \\
+\delta (\langle q4,s4 \rangle, b) = \langle q3,s5 \rangle \\
+\delta (\langle q4,s2 \rangle, a) = \langle q3,s5 \rangle \\
+\delta (\langle q4,s2 \rangle, b) = \langle q3,s0 \rangle \\
+\delta (\langle q3,s5 \rangle, a) = \langle q4,s2 \rangle \\
+\delta (\langle q3,s5 \rangle, b) = \langle q4,s3 \rangle \\
+\end {aligned}
+\end {equation*}
+
+
+\digraph[scale=0.5] {Task256} {
+    rankdir=TB;
+    node [shape =circle] q0s0, q1s1, q1s3, q2s0, q2s2, q2s4, q3s0, q3s1, q3s2, q3s3, q3s4, q3s5, q4s0;
+    node [shape =doublecircle] q4s1, q4s2, q4s3, q4s4, q4s5;
+    
+    q0s0->q1s3 [label="a"];
+    q0s0->q1s1 [label="b"];
+    
+    q1s1->q2s4 [label="a"];
+    q1s1->q2s2 [label="b"];
+    
+    q1s3->q2s0 [label="a"];
+    q1s3->q2s4 [label="b"];
+    
+    q2s4->q4s1 [label="a"];
+    q2s4->q4s5 [label="b"];
+    
+    q2s2->q4s5 [label="a"];
+    q2s2->q4s0 [label="b"];
+    
+    q2s0->q4s3 [label="a"];
+    q2s0->q4s1 [label="b"];
+    
+    q4s1->q3s4 [label="a"];
+    q4s1->q3s2 [label="b"];
+    
+    q4s5->q3s2 [label="a"];
+    q4s5->q3s3 [label="b"];
+
+    q4s0->q3s3 [label="a"];
+    q4s0->q3s1 [label="b"];
+    
+    q4s3->q3s0 [label="a"];
+    q4s3->q3s4 [label="b"];
+    
+    q3s4->q4s1 [label="a"];
+    q3s4->q4s5 [label="b"];
+    
+    q3s2->q4s5 [label="a"];
+    q3s2->q4s0 [label="b"];
+    
+    q3s3->q4s0 [label="a"];
+    q3s3->q4s4 [label="b"];
+    
+    q3s1->q4s4 [label="a"];
+    q3s1->q4s2 [label="b"];
+    
+    q3s0->q4s3 [label="a"];
+    q3s0->q4s1 [label="b"];
+    
+    q4s4->q3s1 [label="a"];
+    q4s4->q3s5 [label="b"];
+    
+    q4s2->q3s5 [label="a"];
+    q4s2->q3s0 [label="b"];
+    
+    q3s5->q4s2 [label="a"];
+    q3s5->q4s3 [label="b"];
+}
+
+
+\begin{large}
+Задание №3. Построить минимальный ДКА по регулярному выражению (5 баллов) 
+\end{large}
+
+\begin{equation}
+(ab + aba)^* a
+\end{equation}
+
+Построим НКА
+Разобьем поэтапно для этого случая:
+ab:
+
+\digraph {Task311}{
+    rankdir=LR;
+    node[shape=circle] q0,q1;
+    node[shape=doublecircle] q2;
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+}
+
+aba:
+
+\digraph {Task312}{
+    rankdir=LR;
+    node[shape=circle] q0,q1,q2;
+    node[shape=doublecircle] q3;
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->q3 [label="a"];
+}
+
+Объединение двух полученных
+
+\digraph {Task313}{
+    rankdir=LR;
+    node[shape=circle] sq0, s0, s1,s2, q0,q1,q2, q3;
+    node[shape=doublecircle] sq1;
+    sq0->s0 [label="l"]
+    sq0->q0 [label="l"]
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->q3 [label="a"];
+    s0->s1 [label="a"];
+    s1->s2 [label="b"];
+    q3->sq1 [label="l"];
+    s2->sq1[label="l"];
+}
+
+Добавим итерацию
+
+\digraph [scale=0.5]{Task314}{
+    rankdir=LR;
+    node[shape=circle] sq0, sq1, s0, s1,s2, q0,q1,q2, q3,sq2;
+    node[shape=doublecircle] sq3;
+    sq0->sq3 [label="l"];
+    sq0->sq1 [label="l"];
+    sq1->s0 [label="l"];
+    sq1->q0 [label="l"];
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->q3 [label="a"];
+    s0->s1 [label="a"];
+    s1->s2 [label="b"];
+    q3->sq2 [label="l"];
+    s2->sq2[label="l"];
+    sq2->sq3[label="l"];
+    sq2->sq1[label="l"];
+}
+
+И конкатенацию
+
+\digraph [scale=0.5]{Task315}{
+    rankdir=LR;
+    node[shape=circle] q1, q2, q3, q4,q5, q6,q7,q8, q9,q10,q11;
+    node[shape=doublecircle] q12;
+    q1->q11 [label="l"];
+    q1->q2 [label="l"];
+    q2->q3 [label="l"];
+    q2->q6 [label="l"];
+    q6->q7 [label="a"];
+    q7->q8 [label="b"];
+    q8->q9 [label="a"];
+    q3->q4 [label="a"];
+    q4->q5 [label="b"];
+    q9->q10 [label="l"];
+    q5->q10[label="l"];
+    q10->q11[label="l"];
+    q10->q2[label="l"];
+    q11->q12[label="a"];
+}
+Минимизируем лямбда-переходы:
+
+\digraph [scale=0.5]{Task316}{
+    rankdir=LR;
+    node[shape=circle] q1, q2, q3, q4,q5, q6,q7,q8, q9;
+    node[shape=doublecircle] q10;
+    q1->q5 [label="l"];
+    q1->q6 [label="l"]
+    q1->q2 [label="l"];
+    q2->q3 [label="a"];
+    q3->q4 [label="b"];
+    q4->q5 [label="l"];
+    q6->q7 [label="a"];
+    q7->q8 [label="b"];
+    q8->q9 [label="a"];
+    q9->q5 [label="l"];
+    q5->q10[label="a"];
+}
+
+Используем алгоритм Томпсона:
+
+\begin{center}
+\begin{tabular}{||c c c||} 
+ \hline
+ Q & a & b \\ [0.5ex] 
+ \hline\hline
+ q1 & q3q7q10 & - \\ 
+ \hline
+ q3q7q10 & - & q4q8 \\ 
+ \hline
+ q4q8 & q3q7q9q10 & - \\ 
+ \hline
+ q3q7q9q10 & - & q4q8 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\digraph [scale=0.5]{Task317}{
+    rankdir=LR;
+    node[shape=circle] q1q2q5q6, q4q8;
+    node[shape=doublecircle] q3q7q10, q3q7q9q10;
+    q1q2q5q6->q3q7q10 [label="a"];
+    q3q7q10->q4q8 [label="b"];
+    q3q7q9q10->q3q7q10 [label="a"];
+    q4q8->q3q7q9q10 [label="a"];
+    q3q7q9q10->q4q8 [label="b"];
+}
+
+Получили минимальный ДКА
+
+\begin{equation}
+a(a(ab)* b)* (ab)*
+\end{equation}
+
+
+\digraph[scale=0.6] {Task321}{
+    node [shape=circle] q0, q2, q3; 
+    node[shape=doublecircle]; q1, q4;
+	rankdir=LR;
+	q0->q1 [label="a"];
+	q1->q2 [label="a"];
+	q2->q4 [label="b"];
+	q4->q2 [label="a"];
+	q2->q3 [label="a"];
+	q3->q2 [label="b"];
+}    
+
+\begin{center}
+\begin{tabular}{||c c c||} 
+ \hline
+ Q & a & b \\ [0.5ex] 
+ \hline\hline
+ q0 & q1 & - \\ 
+ \hline
+ q1 & q2 & - \\ 
+ \hline
+ q2 & q3 & q4 \\ 
+ \hline
+ q3 & - & q2 \\ 
+ \hline
+ q4 & q2 & - \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\digraph[scale=0.6] {Task322}{
+    node [shape=circle] q0, q2, q3; 
+    node[shape=doublecircle]; q1q4;
+	rankdir=LR;
+	q0->q1q4 [label="a"];
+	q1q4->q2 [label="a"];
+	q2->q1q4 [label="b"];
+	q2->q3 [label="a"];
+	q3->q2 [label="b"];
+}    
+   
+
+\begin{equation}
+ (a + (a + b)(a + b)b)*
+\end{equation}
+
+\digraph [scale=0.6]{Task331}{
+    rankdir=LR;
+    node[shape=circle] q1, q2;
+    node[shape=doublecircle] q0;
+    q0->q0 [label="a"];
+    q0->q1 [label="a,b"];
+    q1->q2 [label="a,b"];
+    q2->q0 [label="b"];
+}
+
+Используем Алгоритм Томпсона
+
+\begin{center}
+\begin{tabular}{||c c c||} 
+ \hline
+ Q & a & b \\ [0.5ex] 
+ \hline\hline
+ q0 & q0q1 & q1 \\ 
+ \hline
+ q0q1 & q0q1q2 & q1q2 \\ 
+ \hline
+ q1 & q2 & q2 \\ 
+ \hline
+ q0q1q2 & q0q1q2 & q0q1q2 \\ 
+ \hline
+ q1q2 & q2 & q0q2 \\ 
+ \hline
+ q2 & - & q0 \\ 
+ \hline
+ q0q2 & q0q1 & q0q1 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+Получили ДКА
+
+\digraph [scale=0.6]{Task332}{
+    rankdir=LR;
+    node[shape=doublecircle] q0, q0q2, q0q1,q0q1q2;
+    node[shape=circle] q1, q2, q1q2;
+    q0->q0q1 [label="a"];
+    q0->q1[label="b"];
+    q1->q2[label="a,b"];
+    q2->q0[label="b"];
+    q0q1->q0q1q2[label="a"];
+    q0q1q2->q0q1q2[label="a,b"];
+    q0q1->q1q2[label="b"];
+    q1q2->q0q2[label="b"];
+    q0q2->q0q1[label="a,b"];
+}
+
+(b+c)((ab)*c+(ba)*)*
+
+\digraph [scale=0.6]{Task341}{
+    rankdir=LR;
+    node[shape=doublecircle] q0, q1, q2, q3,q5
+    node[shape=circle] q4,q6;
+    q0->q1 [label="b,c"];
+    q1->q2 [label="a"];
+    q1->q3 [label="b"];
+    q2->q5 [label="b"];
+    q3->q4 [label="a"];
+    q4->q2 [label="a"];
+    q4->q3 [label="b"];
+    q5->q2 [label="a"];
+    q5->q6 [label="c"];
+    q6->q2 [label="a"];
+}
+
+Используем Алгоритм Томпсона
+
+\begin{center}
+\begin{tabular}{||c c c c||} 
+Q & a & b & c\\
+\hline
+q0 & - & q1 & q1 \\
+\hline
+q1 & q2 & q3 & - \\
+\hline
+q2 & - & q5 & - \\
+\hline
+q3 & q4 & - & - \\
+\hline
+q4 & q2 & q3 & - \\
+\hline
+q5 & q2 & - & q6 \\
+\hline
+q6 & q2 & q3 & - \\
+\hline
+\end{tabular}
+\end{center}
+
+Минимизируем:
+
+\digraph [scale=0.6]{Task342}{
+    rankdir=LR;
+    node[shape=doublecircle] q0, q1, q2, q3,q5
+    node[shape=circle] q4q6;
+    q0->q1 [label="b,c"];
+    q1->q2 [label="a"];
+    q1->q3 [label="b"];
+    q2->q5 [label="b"];
+    q3->q4q6 [label="a"];
+    q4q6->q2 [label="a"];
+    q4q6->q3 [label="b"];
+    q5->q2 [label="a"];
+    q5->q4q6 [label="c"];
+    q4q6->q2 [label="a"];
+}
+
+$(a+b)^+ (aa+bb+abab+baba)(a+b)^+$\\
+
+НКА для регулярного выражения:
+
+\digraph[scale=0.5] {Task351}{
+    node [shape=point]; q0;
+    node [shape=doublecircle]; q11;
+    node [shape=circle];
+	rankdir=LR;
+	q0->q1;
+    q1->q2 [label="a,b"];
+    q2->q1 [label="a,b"];
+    q2->q3 [label="a"];
+    q2->q4 [label="b"];
+    q3->q5 [label="b"];
+    q3->q9 [label="a"];
+    q4->q6 [label="a"];
+    q4->q10 [label="b"];
+    q5->q7 [label="a"];
+    q6->q8 [label="b"];
+    q7->q9 [label="b"];
+    q8->q10 [label="a"];
+    q9->q11 [label="a,b"];
+    q10->q11 [label="a,b"];
+    q11->q11 [label="a,b"];
+}      
+    
+Эквивалентный ДКА:
+
+\digraph[scale=0.18] {Task352}{
+    node [shape=point]; q0;
+    node [shape=doublecircle]; q1q3q11, q2q5q11, q1q3q7q11, q2q9q11, q2q5q9q11, q1q4q11, q2q6q11, q1q4q8q11, q2q6q10q11, q2q10q11;
+    node [shape=circle];
+    rankdir=LR;
+    q0->q1;
+    q1 -> q2 [label="a,b"];
+    q2 -> q1q3 [label="a"];
+    q2 -> q1q4 [label="b"];
+    q1q3 -> q2q9 [label="a"];
+    q1q3 -> q2q5 [label="b"];
+    q2q5 -> q1q3q7 [label="a"];
+    q2q5 -> q1q4 [label="b"];
+    q1q4 -> q2q6 [label="a"];
+    q1q4 -> q2q10 [label="b"];
+    q2q6 -> q1q3 [label="a"];
+    q2q6 -> q1q4q8 [label="b"];
+    q1q4q8 -> q2q6q10 [label="a"];
+    q1q4q8 -> q2q10 [label="b"];
+    q2q6q10 -> q1q3q11 [label="a"];
+    q2q6q10 -> q1q4q8q11 [label="b"];
+    q2q10 -> q1q3q11 [label="a"];
+    q2q10 -> q1q4q11 [label="b"];
+    q1q3q7 -> q2q9 [label="a"];
+    q1q3q7 -> q2q5q9 [label="b"];
+    q2q9 -> q1q3q11 [label="a"];
+    q2q9 -> q1q4q11 [label="b"];
+    q1q3q11 -> q2q9q11 [label="a"];
+    q1q3q11 -> q2q5q11 [label="b"];
+    q2q5q11 -> q1q3q7q11 [label="a"];
+    q2q5q11 -> q1q4q11 [label="b"];
+    q2q5q9 -> q1q4q11 [label="b"];
+    q2q5q9 -> q1q3q7q11 [label="a"];
+    q2q5q9 -> q1q4q11 [label="b"];
+    q1q3q7q11 -> q2q9q11 [label="a"];
+    q1q3q7q11 -> q2q5q9q11 [label="b"];
+    q2q9q11 -> q1q4q11 [label="b"];
+    q2q5q9q11 -> q1q3q7q11 [label="a"];
+    q2q5q9q11 -> q1q4q11 [label="b"];
+    q1q4q11 -> q2q6q11 [label="a"];
+    q1q4q11 -> q2q10q11 [label="b"];
+    q2q6q11 -> q1q4q8q11 [label="b"];
+    q1q4q8q11 -> q2q6q10q11 [label="a"];
+    q1q4q8q11 -> q2q10q11 [label="b"];
+    q2q6q10q11 -> q1q3q11 [label="a"];
+    q2q6q10q11 -> q1q4q8q11 [label="b"];
+    q2q10q11 -> q1q3q11 [label="a"];
+    q2q10q11 -> q1q4q11 [label="b"];
+}       
+
+После минимизации:
+
+\digraph[scale=0.4] {Task353}{
+            node [shape=point]; h0;
+            node [shape=doublecircle]; h9;
+            node [shape=circle];
+        	rankdir=LR;
+        	h0->h1;
+        	h1 -> h2 [label="a, b"]
+            h2 -> h3 [label="a"]
+            h2 -> h4 [label="b"]
+            h3 -> h8 [label="a"]
+            h3 -> h5 [label="b"]
+            h4 -> h6 [label="a"]
+            h4 -> h8 [label="b"]
+            h5 -> h7 [label="a"]
+            h5 -> h4 [label="b"]
+            h6 -> h3 [label="a"]
+            h6 -> h7 [label="b"]
+            h7 -> h8 [label="a,b"]
+            h8 -> h9 [label="a,b"]
+            h9 -> h9 [label="a,b"]
+}       
+
+
+\begin{large}
+Задание №4. Определить является ли язык регулярным или нет (5 баллов) 
+\end{large}
+
+
+\begin{equation}
+1. \quad L = \{(aab)^nb(aba)^m | \; n \geq 0, m \geq 0 \}    \nonumber
+\end{equation}
+
+Построим  ДКА для данного языка.
+ 
+\digraph[scale=0.5]{3}{
+        rankdir=LR;
+        node [shape = none] start [label = < >];
+        node [shape = circle] q0;
+        node [shape = circle] q1;
+        node [shape = circle] q2;
+        node [shape = circle] q3;
+        node [shape = circle] q4;
+        node [shape = circle] q5;
+        node [shape = circle] q6;
+        node [shape = doublecircle] q7;
+        start -> q0;
+        q0 -> q1 [label = "a"];
+        q1 -> q2 [label = "a"];
+        q2 -> q3 [label = "b"];
+        q3 -> q0 [label = "l" ];
+        q0 -> q3 [label = "l" ];
+        q3 -> q4 [label = "b"];
+        q4 -> q5 [label = "a"];
+        q5 -> q6 [label = "b"];
+        q6 -> q7 [label = "a"];
+        q7 -> q4 [label = "l"];
+        q4 -> q7 [label = "l"];
+    }
+
+Язык является регулярным
+ 
+\begin{equation}
+2. \quad L = \{ uaav \; |u \in \{a,b\}^* , v \in a,b^* , |u|_b \geq |v|_a \} ;
+\end{equation}
+ 
+Проверим язык на регулярность с помощью отрицания леммы о разрастании:
+ 
+Фиксируем значение n;\\
+$w = b^naaa^n \qquad |w| \geq n$;
+$x = b^p  \qquad\qquad \ |xy| \leq n  ;\; l > 0$;
+$y = b^l$ ;
+$z = b^{n-p-l}aaa^n$ ;
+
+Пусть k = 0, тогда при накачке получим
+$xy^kz = b^pb^{n-p-l}aaa^n = b^{n-l}aaa^n \notin L$;
+
+Отрицание леммы выполнено, язык не является регулярным.
+ 
+
+3.  $L = \{ a^m w \; | \; w \in \{a,b\}^* , 1 \leq |w|_b \leq m\}$  ;
+
+Фиксируем значение n.
+$w = a^n b^n  \qquad |w| \geq n $;
+$x = a^p  \qquad\qquad \ |xy| \leq n  ; \; p \geq 0 ;\; l > 0 $;
+$y = a^l $;
+$z = a^{n-p-l}b^n $;
+
+Пусть k = 0, тогда степень символа "a" меньше чем степень символа "b":
+$xy^0z  = xz = a^{n-l}b^n \notin L $;
+Следовательно, язык не является регулярным
+
+4.$ \quad L = \{ a^kb^ma^n \; | \; k = n \vee m > 0\}$;
+
+Фиксируем значение n.
+ 
+$w = a^n b a^n \qquad |w| \geq n $;
+$x = a^p  \;  |xy| \leq n  => p + l \leq n ;\; l > 0$;
+$y = a^l$;
+$z = a^{n-p-l}ba^n $;
+
+
+Если k = 2, то имеем
+$xy^2z = a^pa^{2l}a^{n-p-l}ba^n = a^{n+l}ba^n \notin L$;
+
+Следовательно, язык не является регулярным
+
+5. $L = \{ucv \; | \; u \in \{a,b\}^*, \; v \in \{a,b\}^*, u \neq v^R \}$ 
+
+Фиксируем значение n.
+$w = (ab)^n c (ab)^n \qquad |w| \geq n$
+$x = \alpha_1\alpha_2...\alpha_p  \qquad\qquad \ |xy| \leq n  =>  p+l \leq n ; \; l \neq 0$;
+$y = \alpha_{p+1}\alpha_{p+2}...\alpha_{P+l}$
+$z = \alpha_{p+l+1}\alpha_{p+l+2}...\alpha_{2n} c (ab)^n$
+ 
+Если k = 2, то 
+$xy^2z = (\alpha_1\alpha_2...\alpha_p)(\alpha_{p+1}\alpha_{p+2}...\alpha_{P+l})^2(\alpha_{p+l+1}\alpha_{p+l+2}...\alpha_{2n} c (ab)^n) \notin L $
+
+Язык не является регулярным.
+
+\end{document}
